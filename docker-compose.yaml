@@ -1,0 +1,35 @@
+version: "3.5"
+services:
+  web:
+    container_name: airenv-nginx
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./app:/var/www/html/app
+    depends_on:
+      - php
+
+  php:
+    container_name: airenv-php
+    build:
+      context: "docker/php/"
+    volumes:
+      - ./app:/var/www/html/app
+
+  postgres:
+    container_name: airenv-postgres
+    build:
+      context: "docker/postgres/"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=airenv
+      - POSTGRES_PASSWORD=airenv
+      - POSTGRES_DB=airenv
+    volumes:
+      - airenvdata:/var/lib/postgresql/data
+
+volumes:
+  airenvdata:
