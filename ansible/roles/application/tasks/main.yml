@@ -58,13 +58,6 @@
     encoding: UTF-8
     template: template0
 
-- name: check app dir
-  stat:
-    path: "{{ webapp_root }}"
-  register: app_cloned
-  become: true
-  become_user: "{{ webmaster_user }}"
-
 - name: git clone
   git:
     repo: "{{ git_repository }}"
@@ -72,12 +65,11 @@
     version: "{{ git_branch }}"
   become: true
   become_user: "{{ webmaster_user }}"
-  when: not app_cloned.stat.exists
 
 - name: copy .env file
   template:
     src: ".env"
-    dest: "{{ webapp_root }}/app/.env"
+    dest: "{{ webapp_root }}/app/.env.local"
   become: true
 
 - name: make var directory
