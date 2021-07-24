@@ -1,0 +1,27 @@
+---
+- name: check composer
+  stat: path="{{ composer_path }}/composer"
+  register: composer_bin
+  tags: composer
+
+- block:
+  - name: copy composer installer
+    copy:
+      src: installer
+      dest: /tmp/installer
+
+  - name: install composer
+    shell: cat /tmp/installer | {{ php_path }}/php -- --install-dir={{ composer_path }}
+
+  - name: rename composer.phar to composer
+    shell: mv {{ composer_path }}/composer.phar {{ composer_path}}/composer
+
+  - name: make composer executable
+    file:
+      path: "{{ composer_path }}/composer"
+      mode: a+x
+      state: file
+
+  when: not composer_bin.stat.exists
+  become: true
+  tags: composer

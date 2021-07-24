@@ -1,0 +1,21 @@
+# PHP のインストール
+- name: PHP
+  yum:
+    enablerepo: remi,remi-php{{ php_version | replace('.','') }}
+    name:
+      - php
+      - php-devel
+      - php-mbstring
+      - php-pdo
+      - php-pgsql
+      - php-gd
+      - php-xml
+      - php-mcrypt
+      - php-zip
+      - php-process
+
+- name: start httpd
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes

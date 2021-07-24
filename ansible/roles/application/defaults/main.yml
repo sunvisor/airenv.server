@@ -1,0 +1,18 @@
+---
+webapp_base: /webapp
+webapp_home: "{{ webapp_base }}/home"
+webapp_root: "{{ webapp_base }}/airenv"
+
+postgres_admin: postgres
+postgres_user: www
+database_name: airenv
+git_branch: master
+secret: 21a166395d8503fee85cbf5059504a395a9905bf
+php_ini: "php.ini"
+php_ini_dest: /etc/php.ini
+httpd_conf_dir: /etc/httpd/conf
+httpd_conf: "httpd.conf"
+httpd_conf_dest: "/etc/httpd/conf/httpd.conf"
+welcome_conf_dest: "/etc/httpd/conf.d/welcome.conf"
+httpd_vhost: "vhost.conf"
+httpd_vhost_dest: "/etc/httpd/conf.d/vhost.conf"

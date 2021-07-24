@@ -1,0 +1,28 @@
+---
+- name: install postgres repository
+  yum:
+    name: "{{ postgres_repo}}"
+
+- name: install PostgreSQL
+  yum:
+    state: latest
+    name:
+      - postgresql{{ postgres_version }}
+      - postgresql{{ postgres_version }}-contrib
+      - postgresql{{ postgres_version }}-server
+      - python-psycopg2
+
+- stat: path={{ postgres_data_dir }}/PG_VERSION
+  register: dbcluster
+
+- name: initdb
+  shell: "{{ postgres_bin }}/initdb -D {{ postgres_data_dir }} --no-locale"
+  become: yes
+  become_user: postgres
+  when: not dbcluster.stat.exists
+
+- name: enable postgres
+  service:
+    name: postgresql-{{ postgres_version }}
+    enabled: true
+    state: started

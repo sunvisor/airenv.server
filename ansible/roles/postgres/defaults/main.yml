@@ -1,0 +1,6 @@
+---
+postgres_version: 11
+postgres_repo: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+postgres_user: postgres
+postgres_bin: /usr/pgsql-{{ postgres_version }}/bin
+postgres_data_dir: /var/lib/pgsql/{{ postgres_version }}/data

@@ -1,0 +1,10 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+{% if app_env == 'staging' %}
+153.120.170.70	fs1.hqtu.local
+153.127.202.61	trauth1.trdom1.intra
+{% endif %}
+{% if app_env == 'intra' %}
+192.168.0.204	fs1.hqtu.local
+192.168.0.205	trauth1.trdom1.intra
+{% endif %}

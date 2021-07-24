@@ -1,0 +1,40 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: basic
+      bacome: true
+      tags:
+        - install
+        - basic
+    - role: postgres
+      become: true
+      tags:
+        - install
+        - postgres
+    - role: apache
+      become: true
+      webmaster_user: "{{ webmaster }}"
+      www_user: "{{ www }}"
+      tags:
+        - install
+        - apache
+    - role: php
+      become: true
+      tags:
+        - install
+        - php
+    - role: composer
+      become: true
+      tags:
+        - install
+        - composer
+    - role: application
+      webmaster_user: "{{ webmaster }}"
+      www_user: "{{ www }}"
+      tags:
+        - install
+        - application

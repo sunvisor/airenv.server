@@ -1,0 +1,23 @@
+---
+- hosts: all
+
+  vars_files:
+    - private.yml
+    - vars.yml
+
+  pre_tasks:
+    - set_fact:
+        migrate_db: true
+      tags:
+        - migrate
+    - set_fact:
+        composer_install: true
+      tags:
+        - composer
+  roles:
+    - role: deploy
+      webmaster_user: "{{ webmaster }}"
+      www_user: "{{ www }}"
+      tags:
+        - always
+  environment: "{{proxy_env}}"

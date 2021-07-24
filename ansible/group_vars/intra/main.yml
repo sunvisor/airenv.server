@@ -1,0 +1,5 @@
+---
+app_env: intra
+http_server_admin: webmaster@sunvisor.net
+php_memory_limit: 2048M
+http_server_name: airenv.intra

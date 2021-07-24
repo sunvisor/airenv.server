@@ -1,0 +1,10 @@
+---
+webmaster: webmaster
+www: www
+git_server: "github.com"
+git_repository: "https://{{ git_server }}/sunvisor/airenv.server.git"
+git_branch: master
+#webapp_root: "{{ webapp_base }}/airenv"
+#webmaster_root: /home/webmaster
+#app_root: "{{ webmaster_root }}/airenv"
+#netrc_path: "{{ webmaster_root }}/.netrc"

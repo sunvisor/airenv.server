@@ -1,0 +1,213 @@
+---
+# Tenri Account Manager
+- name: create application base directory
+  file:
+    path: "{{ webapp_base }}"
+    state: directory
+    owner: "{{ webmaster_user }}"
+    group: "{{ webmaster_user }}"
+  become: true
+
+- name: make home directory
+  file:
+    path: "{{ webapp_base }}/home"
+    state: directory
+    owner: "{{ webmaster_user }}"
+    group: "{{ webmaster_user }}"
+  become: true
+
+- name: copy index html and assets
+  copy:
+    src: "{{ item }}"
+    dest: "{{ webapp_home }}/{{ item }}"
+  with_items:
+    - 403.html
+    - 404.html
+    - 500.html
+  become: true
+
+- name: make tmp
+  file:
+    path: "{{ webapp_base }}/tmp"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode: 0777
+  become: true
+
+- name: make log
+  file:
+    path: "{{ webapp_base }}/logs"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode: 0777
+  become: true
+
+- name: create database user
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    login_user: "{{ postgres_admin }}"
+
+# DB 作成
+- name: create database
+  postgresql_db:
+    name: "{{ database_name }}"
+    login_user: "{{ postgres_admin }}"
+    owner: "{{ postgres_user }}"
+    encoding: UTF-8
+    template: template0
+
+- name: check app dir
+  stat:
+    path: "{{ webapp_root }}"
+  register: app_cloned
+  become: true
+  become_user: "{{ webmaster_user }}"
+
+- name: git clone
+  git:
+    repo: "{{ git_repository }}"
+    dest: "{{ webapp_root }}"
+    version: "{{ git_branch }}"
+  become: true
+  become_user: "{{ webmaster_user }}"
+  when: not app_cloned.stat.exists
+
+- name: copy .env file
+  template:
+    src: ".env"
+    dest: "{{ webapp_root }}/app/.env"
+  become: true
+
+- name: make var directory
+  file:
+    path: "{{ webapp_root }}/app/var"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode : 0777
+  become: true
+
+- name: make cache directory
+  file:
+    path: "{{ webapp_root }}/app/var/cache"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode : 0777
+  become: true
+
+- name: make cache/prod directory
+  file:
+    path: "{{ webapp_root }}/app/var/cache/prod"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode : 0777
+  become: true
+
+- name: make cache/dev directory
+  file:
+    path: "{{ webapp_root }}/app/var/cache/prod"
+    state: directory
+    owner: "{{ webmaster_user }}"
+    group: "{{ webmaster_user }}"
+    mode : 0777
+  become: true
+
+- name: make logs directory
+  file:
+    path: "{{ webapp_root }}/app/var/log"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode : 0777
+  become: true
+
+- name: copy hosts
+  template:
+    src: hosts
+    dest: /etc/hosts
+  become: true
+
+# php.ini ファイルのコピー
+- name: create php.ini
+  template:
+    src: "{{ php_ini }}"
+    dest: "{{ php_ini_dest }}"
+  become: true
+
+- name: replace httpd.conf
+  template:
+    src: "{{ httpd_conf }}"
+    dest: "{{ httpd_conf_dest }}"
+  become: true
+
+- name: replace vhosts.conf
+  template:
+    src: "{{ httpd_vhost }}"
+    dest: "{{ httpd_vhost_dest }}"
+  become: true
+
+- name: replace welcome.conf
+  copy:
+    dest: "{{ welcome_conf_dest }}"
+    content: |
+      # disabled
+  become: true
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+  become: true
+
+# アプリケーションの初期化
+- name: check composer installed
+  stat:
+    path: "{{ webapp_root }}/vendor"
+  register: composer_installed
+  become: true
+  become_user: "{{ webmaster_user }}"
+
+- name: composer install
+  shell: "/usr/local/bin/composer install"
+  args:
+    chdir: "{{ webapp_root }}/app"
+  when: not composer_installed.stat.exists
+  become: true
+  become_user: "{{ webmaster_user }}"
+  environment:
+    PATH: "/usr/local/bin:/usr/bin:/bin"
+
+# マイグレーション
+- name: migiration
+  shell: "/usr/bin/php bin/console doctrine:migration:migrate -q -e prod"
+  args:
+    chdir: "{{ webapp_root }}/app"
+  become: true
+  become_user: "{{ webmaster_user }}"
+
+# remake cache/dev and cache/prod
+- name: remove prod cache
+  file:
+    path: "{{ webapp_root }}/app/var/cache/prod"
+    state: absent
+  become: true
+
+- name: make prod cache directory
+  file:
+    path: "{{ webapp_root }}/app/var/cache/prod"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+    mode : 0777
+  become: true
+
+#- name: clear cache
+#  shell: "/usr/bin/php bin/console cache:clear -q -e prod"
+#  args:
+#    chdir: "{{ webapp_root }}/app"
+#  become: true
+#  become_user: "{{ www_user }}"
