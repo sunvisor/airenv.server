@@ -47,9 +47,12 @@ class LogBrowse implements LogBrowseInterface
     public function list(string $place, DateTimeInterface $from, DateTimeInterface $to): array
     {
         $qb = $this->logRepository->createQueryBuilder('t');
-        $qb->where('t.created_at BETWEEN :from AND :to')
-           ->setParameter('from', $from->format('Y-m-d H:i:s'))
-           ->setParameter('to', $to->format('Y-m-d H:i:s'));
+        $qb ->where('t.created_at BETWEEN :from AND :to')
+            ->andWhere('t.place = :place')
+            ->orderBy('t.createdAt ASC')
+            ->setParameter('from', $from->format('Y-m-d H:i:s'))
+            ->setParameter('to', $to->format('Y-m-d H:i:s'))
+            ->setParameter('place', $place);
         $query = $qb->getQuery();
         $result = $query->getResult();
         return array_map(function ($item) {
