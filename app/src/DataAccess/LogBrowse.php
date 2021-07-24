@@ -49,7 +49,7 @@ class LogBrowse implements LogBrowseInterface
         $qb = $this->logRepository->createQueryBuilder('t');
         $qb ->where('t.created_at BETWEEN :from AND :to')
             ->andWhere('t.place = :place')
-            ->orderBy('t.createdAt ASC')
+            ->orderBy('t.created_at', 'ASC')
             ->setParameter('from', $from->format('Y-m-d H:i:s'))
             ->setParameter('to', $to->format('Y-m-d H:i:s'))
             ->setParameter('place', $place);
