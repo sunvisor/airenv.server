@@ -27,7 +27,7 @@ class Co2ValueController extends AbstractController
     public function latest($place): Response
     {
         $result = $this->co2Value->latest($place);
-        return $this->json($result);
+        return $this->json($result, 200, $this->responseHeaders());
     }
 
     /**
@@ -38,6 +38,16 @@ class Co2ValueController extends AbstractController
         $fromDate = new DateTimeImmutable($from);
         $toDate = new DateTimeImmutable($to);
         $result = $this->co2Value->list($place, $fromDate, $toDate);
-        return $this->json($result);
+        return $this->json($result, 200, $this->responseHeaders());
+    }
+
+    private function responseHeaders(): array
+    {
+        return [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+            'Access-Control-Allow-Headers' => 'DNT, X-User-Token, Keep-Alive, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type',
+        ];
     }
 }
