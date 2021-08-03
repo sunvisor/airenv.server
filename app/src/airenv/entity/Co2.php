@@ -50,12 +50,20 @@ class Co2
         return $this->value;
     }
 
+    public function getColor(): string
+    {
+        if ($this->value > 1200) return 'red';
+        if ($this->value > 800) return 'yellow';
+        return 'green';
+    }
+
     public function toArray(): array
     {
         return [
             'date'  => $this->date->format('Y-m-d H:i:s'),
             'place' => $this->place,
             'value' => $this->value,
+            'color' => $this->getColor(),
         ];
     }
 }
