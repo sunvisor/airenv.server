@@ -66,6 +66,17 @@
   become: true
   become_user: "{{ webmaster_user }}"
 
+- name: copy client app
+  synchronize:
+    src: AirEnv/
+    dest: "{{ webapp_root }}/app/public/app"
+    compress: no
+    copy_links: yes
+    archive: no
+    recursive: yes
+  become: true
+  become_user: "{{ webmaster_user }}"
+
 - name: copy .env file
   template:
     src: ".env"
