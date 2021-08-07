@@ -9,6 +9,7 @@
 namespace App\airenv\entity;
 
 
+use App\airenv\exception\Co2Exception;
 use DateTimeInterface;
 
 class Co2
@@ -17,8 +18,18 @@ class Co2
     private string            $place;
     private float             $value;
 
+    /**
+     * @param DateTimeInterface $date
+     * @param string            $place
+     * @param float             $value
+     * @return Co2
+     * @throws Co2Exception
+     */
     static public function create(DateTimeInterface $date, string $place, float $value): Co2
     {
+        if ($value > 5000 || $value < 400) {
+            throw new Co2Exception('invalid value');
+        }
         return new Co2($date, $place, $value);
     }
 

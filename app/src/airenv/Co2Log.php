@@ -10,6 +10,7 @@ namespace App\airenv;
 
 
 use App\airenv\entity\Co2;
+use App\airenv\exception\Co2Exception;
 use DateTimeImmutable;
 
 class Co2Log implements Co2LogInterface
@@ -25,6 +26,10 @@ class Co2Log implements Co2LogInterface
         $this->logPersistence = $logPersistence;
     }
 
+    /**
+     * @param array $params
+     * @throws Co2Exception
+     */
     public function log(array $params)
     {
         $date = new DateTimeImmutable();

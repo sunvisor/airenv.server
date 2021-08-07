@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\airenv\Co2LogInterface;
+use App\airenv\exception\Co2Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,10 +26,18 @@ class Co2LogController extends AbstractController
      */
     public function addCo2($place, $value): Response
     {
-        $this->co2Log->log([
-            'place' => $place,
-            'value' =>  $value
-        ]);
+        try {
+            $this->co2Log->log([
+                'place' => $place,
+                'value' =>  $value
+            ]);
+
+        } catch (Co2Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
 
         return $this->json([
             'success' => true,
